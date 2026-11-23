@@ -1,0 +1,15 @@
+# Build-Output
+build/
+*.o
+*.d
+*.elf
+*.bin
+*.hex
+*.map
+
+# VS Code: Only version control shared settings
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
