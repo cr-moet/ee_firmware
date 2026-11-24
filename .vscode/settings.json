@@ -14,5 +14,7 @@
     },
     "files.exclude": {
         "**/CMSIS/cmsis-core/CMSIS/Core/Source": true
-    }
+    },
+
+    "files.eol": "\n"
 }
