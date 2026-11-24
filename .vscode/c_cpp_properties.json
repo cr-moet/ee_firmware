@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "STM32H743",
+            "compilerPath": "D:/workspace/tools/arm-gnu-toolchain/bin/arm-none-eabi-gcc.exe",
+            "compilerArgs": [
+                "-mcpu=cortex-m7", "-mthumb",
+                "-mfpu=fpv5-d16", "-mfloat-abi=hard"
+            ],
+            "includePath": [
+                "${workspaceFolder}/ee_hal/include",
+                "${workspaceFolder}/CMSIS/cmsis-device-h7/Include",
+                "${workspaceFolder}/CMSIS/cmsis-core/CMSIS/Core/Include",
+                "${workspaceFolder}/ee_dev/ee_test_board/inc"
+            ],
+            "defines": [ "STM32H743xx" ],
+            "cStandard": "gnu11",
+            "intelliSenseMode": "gcc-arm"
+        }
+    ],
+    "version": 4
+}

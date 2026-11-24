@@ -1,5 +1,5 @@
 {
-        "terminal.integrated.profiles.windows": {
+    "terminal.integrated.profiles.windows": {
         "Cygwin": {
             "path": "D:\\workspace\\tools\\cygwin64\\bin\\bash.exe",
             "args": ["--login", "-i"],
@@ -7,5 +7,12 @@
             "icon": "terminal-bash"
         }
     },
-    "terminal.integrated.defaultProfile.windows": "Cygwin"
+    "terminal.integrated.defaultProfile.windows": "Cygwin",
+
+    "C_Cpp.files.exclude": {
+        "**/CMSIS/cmsis-core/CMSIS/Core/Source/**": true
+    },
+    "files.exclude": {
+        "**/CMSIS/cmsis-core/CMSIS/Core/Source": true
+    }
 }

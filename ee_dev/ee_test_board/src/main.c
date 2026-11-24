@@ -1,10 +1,7 @@
-#include <stdint.h>
+#include <hal/gpio.h>
+#include "board.h"
 
-#define RCC_AHB4ENR	(*(volatile uint32_t *)(0x58024400UL + 0x0E0))
-#define GPIOB_MODER	(*(volatile uint32_t *)(0x58020400UL + 0x00))
-#define GPIOB_BSRR	(*(volatile uint32_t *)(0x58020400UL + 0x18))
-
-static void delay(volatile uint32_t n)
+static void delay(volatile unsigned long n)
 {
 	while (n--)
 		;
@@ -12,16 +9,16 @@ static void delay(volatile uint32_t n)
 
 int main(void)
 {
-	RCC_AHB4ENR |= 1UL << 1;		/* GPIOBEN */
-	(void)RCC_AHB4ENR;			/* zurücklesen, damit der Takt sicher aktiv ist */
+	if (board_init())
+		for (;;)
+			;
 
-	GPIOB_MODER &= ~(3UL << (0 * 2));
-	GPIOB_MODER |=  (1UL << (0 * 2));	/* PB0 als Ausgang */
+	gpio_direction_output(LED_GREEN, 0);
 
 	for (;;) {
-		GPIOB_BSRR = 1UL << 0;		/* LED an */
+		gpio_set_value(LED_GREEN, 1);
 		delay(2000000);
-		GPIOB_BSRR = 1UL << 16;		/* LED aus */
+		gpio_set_value(LED_GREEN, 0);
 		delay(2000000);
 	}
 }

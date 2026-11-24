@@ -1,0 +1,1 @@
+obj-$(CONFIG_GPIO_STM32H7) += gpio-stm32h7.o
