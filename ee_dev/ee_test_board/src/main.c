@@ -7,10 +7,6 @@ int main(void)
 	unsigned long next;
 	int led = 0;
 
-	if (board_init())
-		for (;;)
-			;
-
 	gpio_direction_output(LED_GREEN, 0);
 	gpio_direction_output(LED_BLUE, 0);
 	gpio_direction_input(BUTTON_USER);

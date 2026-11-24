@@ -3,7 +3,8 @@
 #include <hal/errno.h>
 #include <hal/time.h>
 #include <hal/clockevent.h>
-#include <hal/clockevent/systick.h>
+#include <hal/init.h>
+#include <hal/arch.h>
 
 #define SYST_BASE		((void *)0xE000E010UL)
 #define SYST_CSR		0x00	/* Control and status */
@@ -50,8 +51,8 @@ void SysTick_Handler(void)
 	tick_handle_periodic();
 }
 
-int systick_init(unsigned long rate_hz)
+static int systick_init(void)
 {
-	systick.rate = rate_hz;
+	systick.rate = arch_cpu_rate();
 	return clockevent_register(&systick);
-}
+}postcore_initcall(systick_init);

@@ -10,6 +10,4 @@
 
 #define BUTTON_USER	STM32_GPIO('C', 13)	/* B1. The value is 1 when you push the button. */
 
-int board_init(void);
-
 #endif /* _BOARD_H */

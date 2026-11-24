@@ -9,6 +9,14 @@ _estack = ORIGIN(DTCM) + LENGTH(DTCM);
 SECTIONS
 {
 	.isr_vector : { KEEP(*(.isr_vector)) } > FLASH
+
+	.initcall : {
+		. = ALIGN(4);
+		__initcall_start = .;
+		KEEP(*(SORT(.initcall*.init)))
+		__initcall_end = .;
+	} > FLASH
+
 	.text : { *(.text*) *(.rodata*) . = ALIGN(4); } > FLASH
 
 	_sidata = LOADADDR(.data);

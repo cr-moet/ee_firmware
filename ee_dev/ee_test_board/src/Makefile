@@ -1,1 +1,1 @@
-obj-y += main.o board.o
+obj-y += main.o

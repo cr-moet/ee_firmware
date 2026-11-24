@@ -1,7 +1,7 @@
 ARCH    := stm32h7
 TARGET  := ee_test_board
 
-# STM32CubeProgrammer: SWD, Verbindung unter Reset
+# STM32CubeProgrammer: Use SWD. Connect under reset.
 CUBEPROG_CONNECT  := port=SWD mode=UR reset=HWrst
 
 # OpenOCD

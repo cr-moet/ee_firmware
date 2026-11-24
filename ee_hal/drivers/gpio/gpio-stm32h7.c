@@ -1,6 +1,7 @@
 #include <hal/kernel.h>
 #include <hal/io.h>
 #include <hal/errno.h>
+#include <hal/init.h>
 #include <hal/gpio.h>
 #include <hal/gpio/stm32h7.h>
 
@@ -118,4 +119,4 @@ int stm32h7_gpio_init(void)
 			return ret;
 	}
 	return 0;
-}
+}arch_initcall(stm32h7_gpio_init);
