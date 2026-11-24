@@ -13,7 +13,7 @@ CFLAGS  += $(foreach v,$(filter CONFIG_%,$(.VARIABLES)),\
 LDFLAGS += $(CPUFLAGS) -nostartfiles --specs=nano.specs --specs=nosys.specs \
            -Wl,--gc-sections -Wl,-Map=$(BUILD)/$(TARGET).map -T $(LDSCRIPT)
 
-# obj-y aus jedem Unterordner einsammeln (Kbuild-Stil, nicht rekursiv)
+# Collect obj-y from each subdirectory (Kbuild style, no recursive make).
 objs :=
 define collect
 obj-y :=
@@ -38,11 +38,11 @@ $(BUILD)/%.o: $(ROOT)/%.c
 CUBEPROG ?= STM32_Programmer_CLI
 OPENOCD  ?= openocd
 
-# Flashen mit dem STM32CubeProgrammer
+# Write the firmware to the flash memory with STM32CubeProgrammer.
 flash: $(BUILD)/$(TARGET).elf
 	$(CUBEPROG) -c $(CUBEPROG_CONNECT) -w $< -v -rst
 
-# Flashen mit OpenOCD
+# Write the firmware to the flash memory with OpenOCD.
 openocd: $(BUILD)/$(TARGET).elf
 	$(OPENOCD) -f $(OPENOCD_INTERFACE) $(OPENOCD_EXTRA) -f $(OPENOCD_TARGET) \
 		$(OPENOCD_RESET) -c "program $< verify reset exit"

@@ -1,24 +1,29 @@
 #include <hal/gpio.h>
+#include <hal/time.h>
 #include "board.h"
-
-static void delay(volatile unsigned long n)
-{
-	while (n--)
-		;
-}
 
 int main(void)
 {
+	unsigned long next;
+	int led = 0;
+
 	if (board_init())
 		for (;;)
 			;
 
 	gpio_direction_output(LED_GREEN, 0);
+	gpio_direction_output(LED_BLUE, 0);
+	gpio_direction_input(BUTTON_USER);
+
+	next = jiffies + msecs_to_jiffies(500);
 
 	for (;;) {
-		gpio_set_value(LED_GREEN, 1);
-		delay(2000000);
-		gpio_set_value(LED_GREEN, 0);
-		delay(2000000);
+		if (time_after(jiffies, next)) {
+			led = !led;
+			gpio_set_value(LED_GREEN, led);
+			next += msecs_to_jiffies(500);
+		}
+
+		gpio_set_value(LED_BLUE, gpio_get_value(BUTTON_USER));
 	}
 }

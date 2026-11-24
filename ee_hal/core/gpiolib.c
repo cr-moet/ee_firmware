@@ -25,7 +25,7 @@ int gpiochip_add(struct gpio_chip *gc)
 	if (!gc || !gc->ops || !gc->ngpio)
 		return -EINVAL;
 
-	/* überlappende Nummernbereiche ablehnen */
+	/* Do not accept a chip if its number range overlaps a registered chip. */
 	for (it = gpio_chips; it; it = it->next) {
 		if (gc->base < it->base + it->ngpio &&
 		    it->base < gc->base + gc->ngpio)

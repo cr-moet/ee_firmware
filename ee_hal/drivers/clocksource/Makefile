@@ -1,0 +1,1 @@
+obj-$(CONFIG_SYSTICK) += timer-systick.o

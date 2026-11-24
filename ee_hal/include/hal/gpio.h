@@ -15,15 +15,15 @@ struct gpio_ops {
 struct gpio_chip {
 	const char		        *label;
 	const struct gpio_ops	*ops;
-	unsigned int		    base;	/* erste globale GPIO-Nummer */
+	unsigned int		    base;	/* First global GPIO number of this chip */
 	unsigned int		    ngpio;
 	struct gpio_chip	    *next;
 };
 
-/* Provider-API (für Treiber) */
+/* Provider API. Drivers use these functions. */
 int gpiochip_add(struct gpio_chip *gc);
 
-/* Consumer-API (für Boards und Anwendungen) */
+/* Consumer API. Boards and applications use these functions. */
 int  gpio_direction_input(unsigned int gpio);
 int  gpio_direction_output(unsigned int gpio, int value);
 int  gpio_get_value(unsigned int gpio);

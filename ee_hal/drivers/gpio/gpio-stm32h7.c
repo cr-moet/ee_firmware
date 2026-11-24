@@ -7,7 +7,7 @@
 #define STM32H7_GPIO_BASE	0x58020000UL
 #define STM32H7_GPIO_STRIDE	0x400UL
 
-/* vorläufig: wird später ein eigener clk-Treiber */
+/* Temporary. A clock driver will replace this. */
 #define STM32H7_RCC_AHB4ENR	((volatile void *)(0x58024400UL + 0x0E0))
 
 #define GPIO_MODER		0x00
@@ -15,12 +15,12 @@
 #define GPIO_BSRR		0x18
 
 #define MODER_INPUT		0x0
-#define MODER_OUTPUT		0x1
+#define MODER_OUTPUT	0x1
 #define MODER_MASK		0x3
 
 struct stm32_gpio_bank {
 	struct gpio_chip	gc;
-	void			*base;
+	void			    *base;
 	unsigned int		clk_bit;
 };
 
@@ -31,7 +31,10 @@ static void stm32_gpio_set_mode(struct stm32_gpio_bank *bank,
 {
 	u32 val;
 
-	/* Read-Modify-Write: braucht ein Lock, sobald IRQs/RTOS dazukommen */
+	/*
+	 * Read-modify-write. Add a lock when interrupts or an RTOS
+	 * use this function.
+	 */
 	val = readl(bank->base + GPIO_MODER);
 	val &= ~(MODER_MASK << (off * 2));
 	val |= mode << (off * 2);
@@ -42,7 +45,7 @@ static void stm32_gpio_set(struct gpio_chip *gc, unsigned int off, int value)
 {
 	struct stm32_gpio_bank *bank = to_bank(gc);
 
-	/* BSRR ist atomar: kein Read-Modify-Write, kein Lock nötig */
+	/* The BSRR register is atomic. A lock is not necessary. */
 	writel(value ? BIT(off) : BIT(off + 16), bank->base + GPIO_BSRR);
 }
 
@@ -62,7 +65,10 @@ static int stm32_gpio_direction_input(struct gpio_chip *gc, unsigned int off)
 static int stm32_gpio_direction_output(struct gpio_chip *gc,
 				       unsigned int off, int value)
 {
-	/* erst den Pegel setzen, dann auf Ausgang schalten: kein Glitch */
+	/*
+	 * Set the output level first. Then set the pin to output mode.
+	 * This prevents a glitch.
+	 */
 	stm32_gpio_set(gc, off, value);
 	stm32_gpio_set_mode(to_bank(gc), off, MODER_OUTPUT);
 	return 0;
@@ -105,7 +111,7 @@ int stm32h7_gpio_init(void)
 		u32 val = readl(STM32H7_RCC_AHB4ENR);
 
 		writel(val | BIT(banks[i].clk_bit), STM32H7_RCC_AHB4ENR);
-		(void)readl(STM32H7_RCC_AHB4ENR);	/* Takt sicher aktiv */
+		(void)readl(STM32H7_RCC_AHB4ENR);	/* Make sure that the clock is on. */
 
 		ret = gpiochip_add(&banks[i].gc);
 		if (ret)
