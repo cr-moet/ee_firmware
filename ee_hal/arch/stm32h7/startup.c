@@ -1,5 +1,7 @@
 /* ee_hal/arch/stm32h7/startup.c */
 
+#include <hal/init.h>
+
 /* 1. Symbols from the linker script. */
 extern unsigned long _estack;
 extern unsigned long _sidata, _sdata, _edata;
@@ -23,6 +25,11 @@ void Reset_Handler(void)
 
 	/* Enable the FPU (CP10 and CP11). The build uses -mfloat-abi=hard. */
 	*(volatile unsigned long *)0xE000ED88 |= 0xFUL << 20;
+
+	/* Start all drivers. If a driver fails, stop here. */
+	if (do_initcalls())
+		for (;;)
+			;
 
 	main();
 

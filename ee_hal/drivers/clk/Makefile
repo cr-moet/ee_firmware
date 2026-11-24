@@ -1,0 +1,1 @@
+obj-$(CONFIG_CLK_STM32H7) += clk-stm32h7.o

@@ -1,1 +1,1 @@
-obj-y += startup.o clock.o
+obj-y += startup.o

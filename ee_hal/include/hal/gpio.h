@@ -15,7 +15,7 @@ struct gpio_ops {
 struct gpio_chip {
 	const char		        *label;
 	const struct gpio_ops	*ops;
-	unsigned int		    base;	/* First global GPIO number of this chip */
+	unsigned int		    base;	/* The first global GPIO number of this chip. */
 	unsigned int		    ngpio;
 	struct gpio_chip	    *next;
 };

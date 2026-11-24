@@ -4,7 +4,7 @@
 #include <hal/time.h>
 #include <hal/clockevent.h>
 #include <hal/init.h>
-#include <hal/arch.h>
+#include <hal/clk.h>
 
 #define SYST_BASE		((void *)0xE000E010UL)
 #define SYST_CSR		0x00	/* Control and status */
@@ -53,6 +53,11 @@ void SysTick_Handler(void)
 
 static int systick_init(void)
 {
-	systick.rate = arch_cpu_rate();
+	struct clk *clk = clk_get("cpu");
+
+	if (!clk)
+		return -ENODEV;
+
+	systick.rate = clk_get_rate(clk);
 	return clockevent_register(&systick);
 }postcore_initcall(systick_init);

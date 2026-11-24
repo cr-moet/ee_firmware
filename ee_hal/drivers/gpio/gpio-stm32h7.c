@@ -3,13 +3,11 @@
 #include <hal/errno.h>
 #include <hal/init.h>
 #include <hal/gpio.h>
+#include <hal/clk.h>
 #include <hal/gpio/stm32h7.h>
 
 #define STM32H7_GPIO_BASE	0x58020000UL
 #define STM32H7_GPIO_STRIDE	0x400UL
-
-/* Temporary. A clock driver will replace this. */
-#define STM32H7_RCC_AHB4ENR	((volatile void *)(0x58024400UL + 0x0E0))
 
 #define GPIO_MODER		0x00
 #define GPIO_IDR		0x10
@@ -21,8 +19,8 @@
 
 struct stm32_gpio_bank {
 	struct gpio_chip	gc;
-	void			    *base;
-	unsigned int		clk_bit;
+	void				*base;
+	const char			*clk_name;
 };
 
 #define to_bank(c)	container_of(c, struct stm32_gpio_bank, gc)
@@ -82,25 +80,25 @@ static const struct gpio_ops stm32_gpio_ops = {
 	.set			= stm32_gpio_set,
 };
 
-#define STM32_BANK(_n, _label) {					\
-	.gc = {								\
-		.label	= _label,					\
+#define STM32_BANK(_n, _label, _clk) {				\
+	.gc = {										\
+		.label	= _label,						\
 		.ops	= &stm32_gpio_ops,				\
 		.base	= (_n) * 16,					\
-		.ngpio	= 16,						\
-	},								\
-	.base		= (void *)(STM32H7_GPIO_BASE +			\
-				   (_n) * STM32H7_GPIO_STRIDE),		\
-	.clk_bit	= (_n),						\
+		.ngpio	= 16,							\
+	},											\
+	.base		= (void *)(STM32H7_GPIO_BASE +	\
+				   (_n) * STM32H7_GPIO_STRIDE),	\
+	.clk_name	= _clk,							\
 }
 
 static struct stm32_gpio_bank banks[] = {
-	STM32_BANK(0,  "GPIOA"), STM32_BANK(1,  "GPIOB"),
-	STM32_BANK(2,  "GPIOC"), STM32_BANK(3,  "GPIOD"),
-	STM32_BANK(4,  "GPIOE"), STM32_BANK(5,  "GPIOF"),
-	STM32_BANK(6,  "GPIOG"), STM32_BANK(7,  "GPIOH"),
-	STM32_BANK(8,  "GPIOI"), STM32_BANK(9,  "GPIOJ"),
-	STM32_BANK(10, "GPIOK"),
+	STM32_BANK(0,  "GPIOA", "gpioa"), STM32_BANK(1,  "GPIOB", "gpiob"),
+	STM32_BANK(2,  "GPIOC", "gpioc"), STM32_BANK(3,  "GPIOD", "gpiod"),
+	STM32_BANK(4,  "GPIOE", "gpioe"), STM32_BANK(5,  "GPIOF", "gpiof"),
+	STM32_BANK(6,  "GPIOG", "gpiog"), STM32_BANK(7,  "GPIOH", "gpioh"),
+	STM32_BANK(8,  "GPIOI", "gpioi"), STM32_BANK(9,  "GPIOJ", "gpioj"),
+	STM32_BANK(10, "GPIOK", "gpiok"),
 };
 
 int stm32h7_gpio_init(void)
@@ -109,10 +107,9 @@ int stm32h7_gpio_init(void)
 	int ret;
 
 	for (i = 0; i < ARRAY_SIZE(banks); i++) {
-		u32 val = readl(STM32H7_RCC_AHB4ENR);
-
-		writel(val | BIT(banks[i].clk_bit), STM32H7_RCC_AHB4ENR);
-		(void)readl(STM32H7_RCC_AHB4ENR);	/* Make sure that the clock is on. */
+		ret = clk_enable(clk_get(banks[i].clk_name));
+		if (ret)
+			return ret;
 
 		ret = gpiochip_add(&banks[i].gc);
 		if (ret)
